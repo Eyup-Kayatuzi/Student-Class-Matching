@@ -1,0 +1,96 @@
+﻿@model ClassTypeStudent
+@{
+    ViewData["Title"] = "Liste";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-12 mb-3" >
+        <a class="btn btn-primary" asp-action="StudentCreate"> Öğrenci Oluştur</a>
+        <a class="btn btn-info" asp-action="ClassCreate"> Sınıf Oluştur</a>
+        @foreach (var item in Model.ClassTypes)
+        {
+            
+            <a class="btn btn-success" asp-action="Index" asp-route-targetval="@item.Id"> @(item.Level)-@(item.Branch)</a>
+        }
+        
+    </div>
+    <div class="col-12" id="mainTable">
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Level</th>
+                    <th scope="col">Branch</th>
+                    <th scope="col">Total Student Count</th>
+                    <th scope="col">Delete</th>
+                    <th scope="col">Student List</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var item in Model.ClassTypes)
+                    {
+
+                        <tr>
+                            <td>@item.Level</td>
+                            <td>@item.Branch</td>
+                            <td>@Model.Students.Where(x => x.ClassTypeId == item.Id).ToList().Count</td>
+                            <td><a class="btn btn-danger" asp-action="ClassDelete" asp-route-id="@item.Id"> Delete</a></td>
+                            <td><a class="btn btn-danger" asp-action="StudentDetailList" asp-route-id="@item.Id"> Student List</a></td>
+                        </tr>
+                        
+                    }
+                }
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+
+
+    <script>
+        
+        @{
+
+            if (TempData["clicked"] is not null)
+            {
+                int selectedButtonVal = int.Parse(TempData["clicked"].ToString());
+
+                <text>
+                    document.getElementById("mainTable").innerHTML =
+                `<table class="table table-dark table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">FirstName</th>
+                                                <th scope="col">LastName</th>
+                                                <th scope="col">Address</th>
+                                                <th scope="col">Level</th>
+                                                <th scope="col">Branch</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            @{
+                                foreach (var item in Model.Students)
+                                {
+                                    if (item.ClassTypeId == selectedButtonVal)
+                                    {
+                                                                    <tr>
+                                                                        <td>@item.FirstName</td>
+                                                                        <td>@item.LastName</td>
+                                                                        <td>@item.Address</td>
+                                                                        <td>@Model.ClassTypes.Where(x => x.Id == item.ClassTypeId).Select(x => x.Level).FirstOrDefault()</td>
+                                                                        <td>@Model.ClassTypes.Where(x => x.Id == item.ClassTypeId).Select(x => x.Branch).FirstOrDefault()</td>
+                                                                    </tr>
+                                    }
+                                }
+                            }
+                                        </tbody>
+                                    </table>`;
+                </text>
+            }
+        }
+    </script>
+}
+
+
